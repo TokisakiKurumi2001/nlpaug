@@ -32,6 +32,8 @@ def init_context_word_embs_model(model_path, model_type, device, force_reload=Fa
             model = nml.Roberta(model_path, device=device, top_k=top_k, silence=silence, batch_size=batch_size)
         elif model_type == 'bert':
             model = nml.Bert(model_path, device=device, top_k=top_k, silence=silence, batch_size=batch_size)
+        elif model_type == 'phobert':
+            model = nml.Phobert(model_path, device=device, top_k=top_k, silence=silence, batch_size=batch_size)
         else:
             raise ValueError('Model type value is unexpected. Only support bert and roberta models.')
     else:
@@ -147,6 +149,8 @@ class ContextualWordEmbsAug(WordAugmenter):
 
         elif 'bart' in self.model_path.lower():
             return 'bart'
+        elif 'vinai/phobert-base' in self.model_path.lower():
+            return 'phobert'
 
 #     'google/electra-small-discriminator',
 #     'google/reformer-enwik8',
@@ -295,7 +299,7 @@ class ContextualWordEmbsAug(WordAugmenter):
                 if self.model_type in ['bert', 'electra']:
                     ids = self.model.get_tokenizer().convert_tokens_to_ids(head_doc.get_augmented_tokens())
                     masked_text = self.model.get_tokenizer().decode(ids).strip()
-                elif self.model_type in ['xlnet', 'roberta', 'bart']:
+                elif self.model_type in ['xlnet', 'roberta', 'bart', 'phobert']:
                     masked_text = self.model.get_tokenizer().convert_tokens_to_string(head_doc.get_augmented_tokens()).strip()
 
                 masked_texts.append(masked_text)
@@ -390,7 +394,7 @@ class ContextualWordEmbsAug(WordAugmenter):
         for i, (split_result, reserved_stopword_tokens) in enumerate(zip(split_results, reserved_stopwords)):
             head_text, tail_text, head_tokens, tail_tokens = split_result            
 
-            if self.model_type in ['xlnet', 'roberta', 'bart']:
+            if self.model_type in ['xlnet', 'roberta', 'bart', 'phobert']:
                 # xlent and roberta tokens include prefix (e.g. ▁ or Ġ')
                 cleaned_head_tokens = [t.replace(self.model.get_subword_prefix(), '') for t in head_tokens]
             else:
@@ -416,7 +420,7 @@ class ContextualWordEmbsAug(WordAugmenter):
                 aug_idxes.append(-1)
 
         token_placeholder = self.model.get_mask_token()
-        if self.model_type in ['xlnet', 'roberta', 'bart']:
+        if self.model_type in ['xlnet', 'roberta', 'bart', 'phobert']:
             token_placeholder = self.model.get_subword_prefix() + token_placeholder  # Adding prefix for
 
         # Augment same index of aug by batch
@@ -446,7 +450,7 @@ class ContextualWordEmbsAug(WordAugmenter):
                         break
                     if self.model_type in ['bert', 'electra'] and self.model.get_subword_prefix() in subword_token:
                         to_remove_idxes.append(k)
-                    elif self.model_type in ['xlnet', 'roberta', 'bart'] and self.model.get_subword_prefix() not in subword_token:
+                    elif self.model_type in ['xlnet', 'roberta', 'bart', 'phobert'] and self.model.get_subword_prefix() not in subword_token:
                         to_remove_idxes.append(k)
                     else:
                         break
@@ -460,7 +464,7 @@ class ContextualWordEmbsAug(WordAugmenter):
                 if self.model_type in ['bert', 'electra']:
                     ids = self.model.get_tokenizer().convert_tokens_to_ids(head_doc.get_augmented_tokens())
                     masked_text = self.model.get_tokenizer().decode(ids).strip()
-                elif self.model_type in ['xlnet', 'roberta', 'bart']:
+                elif self.model_type in ['xlnet', 'roberta', 'bart', 'phobert']:
                     masked_text = self.model.get_tokenizer().convert_tokens_to_string(head_doc.get_augmented_tokens()).strip()
 
                 masked_texts.append(masked_text)
