@@ -11,8 +11,7 @@ from nlpaug.model.lang_models import LanguageModels
 from nlpaug.util.selection.filtering import *
 
 
-class Roberta(LanguageModels):
-    # https://arxiv.org/pdf/1907.11692.pdf
+class Phobert(LanguageModels):
     START_TOKEN = '<s>'
     SEPARATOR_TOKEN = '</s>'
     MASK_TOKEN = '<mask>'
