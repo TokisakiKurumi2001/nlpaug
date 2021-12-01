@@ -304,10 +304,11 @@ class ContextualWordEmbsAug(WordAugmenter):
 
                 aug_input_poses.append(j)
                 # some tokenizers handle special charas (e.g. don't can merge after decode)
-                if self.model_type in ['bert', 'electra', 'phobert']:
+                if self.model_type in ['bert', 'electra']:
                     ids = self.model.get_tokenizer().convert_tokens_to_ids(head_doc.get_augmented_tokens())
                     masked_text = self.model.get_tokenizer().decode(ids).strip()
-                elif self.model_type in ['xlnet', 'roberta', 'bart']:
+                elif self.model_type in ['xlnet', 'roberta', 'bart', 'phobert']:
+                    print(f"head_doc: {head_doc.get_augmented_tokens()}")
                     masked_text = self.model.get_tokenizer().convert_tokens_to_string(head_doc.get_augmented_tokens()).strip()
 
                 masked_texts.append(masked_text)
