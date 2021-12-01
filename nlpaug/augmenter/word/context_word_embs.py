@@ -184,14 +184,21 @@ class ContextualWordEmbsAug(WordAugmenter):
             # Do not augment tokens if len is less than aug_min
             if (self.model.get_subword_prefix() in token and len(token) < self.aug_min+1) \
                 or (self.model.get_subword_prefix() not in token and len(token) < self.aug_min):
+                print("Dumm")
                 continue
-            if self.model_type in ['xlnet', 'roberta', 'bart', 'phobert']:
+            if self.model_type in ['xlnet', 'roberta', 'bart']:
                 # xlent may tokenize word incorrectly. For example, 'fox', will be tokeinzed as ['_', 'fox']
                 if token == self.model.get_subword_prefix():
                     continue
 
                 # subword
                 if not token.startswith(self.model.get_subword_prefix()):
+                    continue
+            if self.model_type in ['phobert']:
+                if token == self.model.get_subword_prefix():
+                    continue
+                # subword
+                if not token.endswith(self.model.get_subword_prefix()):
                     continue
 
             results.append(token_idx)
