@@ -171,7 +171,6 @@ class ContextualWordEmbsAug(WordAugmenter):
             return False
 
     def skip_aug(self, token_idxes, tokens):
-        print(f"token_idxes: {token_idxes}")
         results = []
 
         for token_idx in token_idxes:
@@ -184,7 +183,6 @@ class ContextualWordEmbsAug(WordAugmenter):
             # Do not augment tokens if len is less than aug_min
             if (self.model.get_subword_prefix() in token and len(token) < self.aug_min+1) \
                 or (self.model.get_subword_prefix() not in token and len(token) < self.aug_min):
-                print("Dumm")
                 continue
             if self.model_type in ['xlnet', 'roberta', 'bart']:
                 # xlent may tokenize word incorrectly. For example, 'fox', will be tokeinzed as ['_', 'fox']
@@ -202,7 +200,6 @@ class ContextualWordEmbsAug(WordAugmenter):
                     continue
 
             results.append(token_idx)
-        print(f"results: {results}")
         return results
 
     def split_text(self, data):
@@ -235,7 +232,6 @@ class ContextualWordEmbsAug(WordAugmenter):
         return (head_text, tail_text, tokens[:self.max_num_token], tokens[self.max_num_token:]), reserved_stopwords
 
     def insert(self, data):
-        print(f"data: {data}")
         if not data:
             return data
 
@@ -256,7 +252,6 @@ class ContextualWordEmbsAug(WordAugmenter):
             reserved_stopwords.append(reserved_stopword)
 
         change_seq = 0
-        print(f"split_result: {split_result}")
 
         # Pick target word for augmentation
         for i, (split_result, reserved_stopword_tokens) in enumerate(zip(split_results, reserved_stopwords)):
@@ -309,10 +304,10 @@ class ContextualWordEmbsAug(WordAugmenter):
 
                 aug_input_poses.append(j)
                 # some tokenizers handle special charas (e.g. don't can merge after decode)
-                if self.model_type in ['bert', 'electra']:
+                if self.model_type in ['bert', 'electra', 'phobert']:
                     ids = self.model.get_tokenizer().convert_tokens_to_ids(head_doc.get_augmented_tokens())
                     masked_text = self.model.get_tokenizer().decode(ids).strip()
-                elif self.model_type in ['xlnet', 'roberta', 'bart', 'phobert']:
+                elif self.model_type in ['xlnet', 'roberta', 'bart']:
                     masked_text = self.model.get_tokenizer().convert_tokens_to_string(head_doc.get_augmented_tokens()).strip()
 
                 masked_texts.append(masked_text)
