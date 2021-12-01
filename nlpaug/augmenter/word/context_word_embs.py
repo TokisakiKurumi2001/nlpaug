@@ -171,6 +171,7 @@ class ContextualWordEmbsAug(WordAugmenter):
             return False
 
     def skip_aug(self, token_idxes, tokens):
+        print(f"token_idxes: {token_idxes}")
         results = []
 
         for token_idx in token_idxes:
