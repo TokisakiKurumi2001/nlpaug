@@ -195,7 +195,7 @@ class ContextualWordEmbsAug(WordAugmenter):
                     continue
 
             results.append(token_idx)
-
+        print(f"results: {results}")
         return results
 
     def split_text(self, data):
