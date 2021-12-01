@@ -227,6 +227,7 @@ class ContextualWordEmbsAug(WordAugmenter):
         return (head_text, tail_text, tokens[:self.max_num_token], tokens[self.max_num_token:]), reserved_stopwords
 
     def insert(self, data):
+        print(f"data: {data}")
         if not data:
             return data
 
@@ -247,6 +248,7 @@ class ContextualWordEmbsAug(WordAugmenter):
             reserved_stopwords.append(reserved_stopword)
 
         change_seq = 0
+        print(f"split_result: {split_result}")
 
         # Pick target word for augmentation
         for i, (split_result, reserved_stopword_tokens) in enumerate(zip(split_results, reserved_stopwords)):
@@ -255,6 +257,7 @@ class ContextualWordEmbsAug(WordAugmenter):
             if self.model_type in ['xlnet', 'roberta', 'bart', 'phobert']:
                 # xlent and roberta tokens include prefix (e.g. ▁ or Ġ')
                 cleaned_head_tokens = [t.replace(self.model.get_subword_prefix(), '') for t in head_tokens]
+                print(f"cleaned_head_tokens: {cleaned_head_tokens}")
             else:
                 cleaned_head_tokens = head_tokens
 
@@ -266,7 +269,7 @@ class ContextualWordEmbsAug(WordAugmenter):
                     head_doc, reserved_stopword_tokens, change_seq)
 
             split_results[i] += (cleaned_head_tokens, head_doc, aug_idxes, )
-
+        print(f"split_results: {split_results}")
         # Pad aug_idxes
         max_aug_size = max([len(split_result[6]) for split_result in split_results])
         for split_result in split_results:
@@ -275,8 +278,10 @@ class ContextualWordEmbsAug(WordAugmenter):
                 aug_idxes.append(-1)
 
         token_placeholder = self.model.get_mask_token()
-        if self.model_type in ['xlnet', 'roberta', 'bart', 'phobert']:
+        if self.model_type in ['xlnet', 'roberta', 'bart']:
             token_placeholder = self.model.get_subword_prefix() + token_placeholder  # Adding prefix for
+        elif self.model_type in ['phobert']:
+            token_placeholder = token_placeholder + self.model.get_subword_prefix() # Adding prefix for
 
         # Augment same index of aug by batch
         for i in range(max_aug_size):
@@ -303,6 +308,7 @@ class ContextualWordEmbsAug(WordAugmenter):
                     masked_text = self.model.get_tokenizer().convert_tokens_to_string(head_doc.get_augmented_tokens()).strip()
 
                 masked_texts.append(masked_text)
+                print(f"masked_texts: {masked_texts}")
 
             if not len(masked_texts):
                 continue
