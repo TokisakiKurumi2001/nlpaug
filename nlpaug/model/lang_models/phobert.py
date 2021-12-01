@@ -17,7 +17,7 @@ class Phobert(LanguageModels):
     MASK_TOKEN = '<mask>'
     PAD_TOKEN = '<pad>'
     UNKNOWN_TOKEN = '<unk>'
-    SUBWORD_PREFIX = 'Ġ'
+    SUBWORD_PREFIX = ''
 
     def __init__(self, model_path='vinai/phobert-base', temperature=1.0, top_k=None, top_p=None, batch_size=32, 
         device='cuda', silence=True):
