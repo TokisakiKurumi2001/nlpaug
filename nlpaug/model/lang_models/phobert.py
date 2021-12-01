@@ -17,7 +17,7 @@ class Phobert(LanguageModels):
     MASK_TOKEN = '<mask>'
     PAD_TOKEN = '<pad>'
     UNKNOWN_TOKEN = '<unk>'
-    SUBWORD_PREFIX = ''
+    SUBWORD_POSTFIX = '@@'
 
     def __init__(self, model_path='vinai/phobert-base', temperature=1.0, top_k=None, top_p=None, batch_size=32, 
         device='cuda', silence=True):
@@ -65,8 +65,8 @@ class Phobert(LanguageModels):
     def get_tokenizer(self):
         return self.tokenizer
 
-    def get_subword_prefix(self):
-        return self.SUBWORD_PREFIX
+    def get_subword_postfix(self):
+        return self.SUBWORD_POSTFIX
 
     def get_mask_token(self):
         return self.MASK_TOKEN
@@ -110,7 +110,7 @@ class Phobert(LanguageModels):
                 target_token_logits, target_token_idxes = self.filtering(target_token_logits, seed)
                 if len(target_token_idxes) != 0:
                     new_tokens = self.pick(target_token_logits, target_token_idxes, target_word=target_token, n=10)
-                    results.append([t[0] for t in new_tokens if self.get_subword_prefix() in t[0]])
+                    results.append([t[0] for t in new_tokens if self.get_subword_postfix() in t[0]])
                 else:
                     results.append([''])
 
