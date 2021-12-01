@@ -284,7 +284,7 @@ class ContextualWordEmbsAug(WordAugmenter):
         if self.model_type in ['xlnet', 'roberta', 'bart']:
             token_placeholder = self.model.get_subword_prefix() + token_placeholder  # Adding prefix for
         elif self.model_type in ['phobert']:
-            token_placeholder = token_placeholder
+            token_placeholder = ' ' + token_placeholder
 
         # Augment same index of aug by batch
         for i in range(max_aug_size):
