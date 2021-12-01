@@ -184,7 +184,7 @@ class ContextualWordEmbsAug(WordAugmenter):
             if (self.model.get_subword_prefix() in token and len(token) < self.aug_min+1) \
                 or (self.model.get_subword_prefix() not in token and len(token) < self.aug_min):
                 continue
-            if self.model_type in ['xlnet', 'roberta', 'bart']:
+            if self.model_type in ['xlnet', 'roberta', 'bart', 'phobert']:
                 # xlent may tokenize word incorrectly. For example, 'fox', will be tokeinzed as ['_', 'fox']
                 if token == self.model.get_subword_prefix():
                     continue
@@ -252,7 +252,7 @@ class ContextualWordEmbsAug(WordAugmenter):
         for i, (split_result, reserved_stopword_tokens) in enumerate(zip(split_results, reserved_stopwords)):
             head_text, tail_text, head_tokens, tail_tokens = split_result            
 
-            if self.model_type in ['xlnet', 'roberta', 'bart']:
+            if self.model_type in ['xlnet', 'roberta', 'bart', 'phobert']:
                 # xlent and roberta tokens include prefix (e.g. ▁ or Ġ')
                 cleaned_head_tokens = [t.replace(self.model.get_subword_prefix(), '') for t in head_tokens]
             else:
@@ -275,7 +275,7 @@ class ContextualWordEmbsAug(WordAugmenter):
                 aug_idxes.append(-1)
 
         token_placeholder = self.model.get_mask_token()
-        if self.model_type in ['xlnet', 'roberta', 'bart']:
+        if self.model_type in ['xlnet', 'roberta', 'bart', 'phobert']:
             token_placeholder = self.model.get_subword_prefix() + token_placeholder  # Adding prefix for
 
         # Augment same index of aug by batch
