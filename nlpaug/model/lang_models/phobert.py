@@ -76,6 +76,7 @@ class Phobert(LanguageModels):
         # Prepare inputs
         for i in range(0, len(texts), self.batch_size):
             token_inputs = [self.tokenizer.encode(text) for text in texts[i:i+self.batch_size]]
+            print(f"token_inputs: {token_inputs}")
             if target_words is None:
                 target_words = [None] * len(token_inputs)
 
